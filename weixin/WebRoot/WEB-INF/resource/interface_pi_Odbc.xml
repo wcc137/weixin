@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="GB2312"?>
+<root>
+	<!-- 数据库连接地址 -->
+	<pi_odbc_db_url>jdbc:odbc:pi_lgrd</pi_odbc_db_url>
+	<!-- 数据库连接驱动程序 -->
+	<pi_odbc_db_driver>sun.jdbc.odbc.JdbcOdbcDriver</pi_odbc_db_driver>
+	<!-- 数据库访问用户 -->
+	<pi_odbc_db_user>PIDEMO</pi_odbc_db_user>
+	<!-- 数据库访问密码 -->
+	<pi_odbc_db_password></pi_odbc_db_password>
+</root>
+

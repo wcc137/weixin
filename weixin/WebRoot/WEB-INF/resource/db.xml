@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="GB18030"?>
+<root>
+	<!-- 数据库连接地址 -->
+	<db_url>jdbc:oracle:thin:@10.150.181.89:1521:orcl</db_url>
+	<!-- 数据库连接驱动程序 -->
+	<db_driver>oracle.jdbc.driver.OracleDriver</db_driver>
+	<!-- 数据库访问用户 -->
+	<db_user>yqxt</db_user>
+	<!-- 数据库访问密码 -->
+	<db_password>yqxt</db_password>
+	<!-- 使用连接池时的数据源名称 TOMCAT -->
+	<db_datasource>jdbc/yqxtdb</db_datasource>
+	<!-- 数据库类型  为ORACLE 、 为MYSQL 、 SEQSERVER -->
+	<db_database>ORACLE</db_database>
+	<!-- 连接方式 WEBSPHERE  、TOMCAT、为空则直连-->
+	<conn_type>TOMCAT</conn_type>
+</root>

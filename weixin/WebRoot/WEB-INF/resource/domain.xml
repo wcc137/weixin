@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="GBK"?>
+<root>
+	<!--域用户登录时间差（服务器时间差），单位为分钟，必须为整数，即当前时间向前/后推算多少分钟，默认为1-->
+	<difMinute>1</difMinute>
+	<!--域用户登录加密字符串前缀 必须和验证服务器中web.config中的 prefix 等同 -->
+	<prefix>@abc.$xyz%zpy%qpp*</prefix>
+	<!--域用户验证IIS服务器默认验证地址 -->
+	<iisvalidate>http://10.150.224.114:9999/Default.aspx</iisvalidate>
+	<!--域用户密码修改地址 -->
+	<iischgpwd>http://10.150.224.114:9999/updatepwd.aspx</iischgpwd>
+	<!--域用户登录页面 -->
+	<domainUrl>http://10.150.224.114/ftxt/domainLogon.jsp</domainUrl>
+</root>

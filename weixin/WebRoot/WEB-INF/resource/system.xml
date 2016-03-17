@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="GBK"?>
+<root>
+	<!--系统名称 -->
+	<name>浙能乐清发电有限责任公司</name>
+	<!--系统服务路径 -->
+	<server>/weixin</server>
+	<!--当前客户名称 -->
+	<client>浙能乐清发电有限责任公司</client>
+	<!-- 刷新时间 -->
+	<refresh_time>300</refresh_time>
+	<!-- 超级密码-->
+	<super_pwd>123</super_pwd>
+	<!-- 日志文件存储路径 如“d:\\logs\\” -->
+	<log_path>D:\\GitHub\\eclipse_github_workspace\\weixin-java-tools\\weixin\\WebRoot\\WEB-INF\\resource\\log\\</log_path>
+	<!-- 文件上传路径 如“d:\\upload\\” -->
+	<upload_path>D:\\GitHub\\eclipse_github_workspace\\weixin-java-tools\\weixin\\WebRoot\\</upload_path>
+	<!--文件上传路径(该文件地址必须在web文件夹下,是的可以被访问) 如“d:\\upload\\” -->
+	<upload_path_web>D:\\GitHub\\eclipse_github_workspace\\weixin-java-tools\\weixin\\WebRoot\\</upload_path_web>
+	<!-- 系统出错时显示的页面 -->
+	<pageError></pageError>
+	<!-- session失效的页面 -->
+	<pageNotSession>/login.html</pageNotSession>
+	<!-- 用户没有权限所返回的页面 -->
+	<pageNotPower>/common/NoPower.jsp</pageNotPower>
+	<!--用户登录成功之后跳转的页面-->
+	<pageRedirect>/index.jsp</pageRedirect>
+	<!-- 是否打印错误日志 -->
+	<outError>true</outError> 
+	<!-- 是否打印DEBUGGER日志 -->
+	<outDebug>false</outDebug>
+	<!-- 登录是否启用验证码验证 -->
+	<isYzm>false</isYzm>
+	<!-- 是否启用域用户验证 -->
+	<domain>false</domain>
+</root>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="GB2312"?>
+<MESSAGE>
+	<ERROR_YH>用户名不正确</ERROR_YH>
+	<ERROR_RE>登录用户重名,请用工号登录</ERROR_RE>
+	<ERROR_KL>用户的密码不正确</ERROR_KL>
+	<ERROR_DOMAIN_KEY>您的访问被拒绝,没有通过验证,请重新输入工号和密码</ERROR_DOMAIN_KEY>
+	<ERROR_FORBIDDEN>当前用户已经被禁用</ERROR_FORBIDDEN>
+	<ERROR_SESSION>访问失效请重新登陆</ERROR_SESSION>
+	<ERROR_PRIVIEW>用户无当前页面的操作权限</ERROR_PRIVIEW>
+	<ERROR_DB>数据库访问错误</ERROR_DB>
+	<ERROR_NOTINIT>系统还没有初始化</ERROR_NOTINIT>
+	<ERROR_NULL>不能为空</ERROR_NULL>
+	<ERROR_INITERROR>系统内部错误</ERROR_INITERROR>
+</MESSAGE>

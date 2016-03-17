@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="GB2312"?>
+<root>
+	<!-- 配置PI服务接口程序信息 -->
+	<!-- PI接口C程序部署地址 -->
+	<PI_SERVER>10.150.181.84</PI_SERVER>
+	<!-- 连接端口 -->
+	<PI_PORT>7885</PI_PORT>
+	<!--连接超时时间(秒)-->
+	<PI_SocketTimeout>60</PI_SocketTimeout>
+</root>
+
