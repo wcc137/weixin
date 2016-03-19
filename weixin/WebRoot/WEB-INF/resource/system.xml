@@ -11,11 +11,11 @@
 	<!-- 超级密码-->
 	<super_pwd>123</super_pwd>
 	<!-- 日志文件存储路径 如“d:\\logs\\” -->
-	<log_path>D:\\GitHub\\eclipse_github_workspace\\weixin-java-tools\\weixin\\WebRoot\\WEB-INF\\resource\\log\\</log_path>
+	<log_path>D:\\GitHub\\weixin\\weixin\\WebRoot\\WEB-INF\\resource\\log\\</log_path>
 	<!-- 文件上传路径 如“d:\\upload\\” -->
-	<upload_path>D:\\GitHub\\eclipse_github_workspace\\weixin-java-tools\\weixin\\WebRoot\\</upload_path>
+	<upload_path>D:\\GitHub\\weixin\\weixin\\WebRoot\\</upload_path>
 	<!--文件上传路径(该文件地址必须在web文件夹下,是的可以被访问) 如“d:\\upload\\” -->
-	<upload_path_web>D:\\GitHub\\eclipse_github_workspace\\weixin-java-tools\\weixin\\WebRoot\\</upload_path_web>
+	<upload_path_web>D:\\GitHub\\weixin\\weixin\\WebRoot\\</upload_path_web>
 	<!-- 系统出错时显示的页面 -->
 	<pageError></pageError>
 	<!-- session失效的页面 -->
