@@ -3,6 +3,7 @@ package com.changing.wechat;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +32,11 @@ import me.chanjar.weixin.mp.bean.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.WxMpXmlOutMessage;
 import me.chanjar.weixin.mp.bean.WxMpXmlOutNewsMessage;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
+import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import me.chanjar.weixin.mp.util.crypto.WxMpCryptUtil;
 
+import com.changing.framework.db.QueryOneBean;
+import com.changing.framework.db.SqlExeBean;
 import com.changing.framework.helper.FileHelper;
 import com.changing.framework.helper.LogHelper;
 
@@ -41,7 +45,7 @@ import com.changing.framework.helper.LogHelper;
  * 
  * @author Administrator
  */
-@WebServlet({ "/wxmpp111" })
+@WebServlet({ "/wxmpp" })
 public class WxMpServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	protected WxMpInMemoryConfigStorage config;
@@ -95,43 +99,92 @@ public class WxMpServlet extends HttpServlet {
 		String msgSignature = request.getParameter("msg_signature");
 		String nonce = request.getParameter("nonce");
 		String timestamp = request.getParameter("timestamp");
+		QueryOneBean queryOneBean=new QueryOneBean();
 		LogHelper.logDebug(WxMpServlet.class,
 				"服务中心->企业消息 ==>回调接口执行,POST方法...企业消息处理回复..." + msgSignature + request.getParameter("signature"));
-		System.out.println(request.getParameter("msg_signature") + "     msg_signature      "
-				+ request.getParameter("signature"));
-		System.out.println(timestamp + "              " + nonce);
+		// System.out.println(request.getParameter("msg_signature") + "     msg_signature      "
+		// + request.getParameter("signature"));
+		// System.out.println(timestamp + "              " + nonce);
 		String encryptType = StringUtils.isBlank(request.getParameter("encrypt_type")) ? "raw" : request
 				.getParameter("encrypt_type");
 		WxMpXmlMessage inMessage = null;
+		String returnV = "";
 		if ("raw".equals(encryptType)) {
 			// 明文传输的消息
 			inMessage = WxMpXmlMessage.fromXml(request.getInputStream());
-			System.out.println(inMessage.getFromUserName() + "--" + inMessage.getEventKey());
-
+			System.out.println(" 用户 触发事件： " + inMessage.toString());
 			try {
-				if (inMessage.getEventKey().equals("EWM")) {
-					WxMpQrCodeTicket ticket = wxMpService.qrCodeCreateLastTicket("1");
-					File file = wxMpService.qrCodePicture(ticket);
-					System.out.println(file.getPath() + "               " + ticket.getUrl());
-					WxMpXmlOutNewsMessage.Item item = new WxMpXmlOutNewsMessage.Item();
-					item.setDescription("二维码");
-					item.setPicUrl(ticket.getUrl());
-					// item.setPicUrl(ticket.getUrl());
-					item.setTitle("二维码title");
-					// item.setUrl(ticket.getUrl());
-					item.setUrl(ticket.getUrl());
-					// System.out.println("ticket   "+ticket.getTicket());
-					WxMpXmlOutNewsMessage m = WxMpXmlOutMessage.NEWS().fromUser(inMessage.getToUserName())
-							.toUser(inMessage.getFromUserName()).addArticle(item).build();
-					response.getWriter().write(m.toXml());
-				}
-				if (inMessage.getEventKey().equals("rselfmenu_0_1")) {
-					WxMpXmlMessage.ScanCodeInfo codeInf = inMessage.getScanCodeInfo();
-					System.out.println("扫码类型:" + codeInf.getScanType() + " 扫码结果: " + codeInf.getScanResult());
-					/*无作用
-					 * WxMpXmlOutMessage m = WxMpXmlOutMessage.TEXT().content("二维码扫描结果为：" + codeInf.getScanResult()) .fromUser(inMessage.getToUserName()).toUser(inMessage.getFromUserName()).build();
-					 * response.getWriter().write(m.toXml());
-					 */
+				if (inMessage.getMsgType().equals("event")) {
+					if (inMessage.getEventKey().equals("EWM")) {
+						String ewmUrl = "";
+						String urlTicket = "";
+						// 获得二维码
+						WxMpQrCodeTicket ticket = null;
+						queryOneBean.executeQuery("SELECT * FROM    t_test_wx where USERID ='"+inMessage.getFromUserName()+"' ");
+						
+						if (!queryOneBean.getValue("USERID").equals("")) {
+							ewmUrl = queryOneBean.getValue("URLSTR");
+							urlTicket = queryOneBean.getValue("TICKETSTR");
+						} else {
+							ticket = wxMpService.qrCodeCreateTmpTicket(1, 7 * 24 * 60 * 60);
+							urlTicket = ticket.getTicket();
+							ewmUrl = ticket.getUrl();
+							String sql=" INSERT INTO t_test_wx(USERID,URLSTR,TICKETSTR) VALUES('"+inMessage.getFromUserName()+"','"+ewmUrl+"','"+urlTicket+"')";
+							SqlExeBean sqlExeBean=new SqlExeBean();
+							sqlExeBean.executeUpdate(sql);
+							
+						}
+						System.out.println(urlTicket + " ---***-- " + ewmUrl);
+						// 回复消息
+						WxMpXmlOutNewsMessage.Item item = new WxMpXmlOutNewsMessage.Item();
+						item.setDescription("该个人推广二维码7天有效期！/n请发送二维码给其他用户，然后长按二维码进行识别！");
+						item.setPicUrl("http://www.smzdm.com/resources/public/img/logo.png");
+						item.setTitle("个人推广二维码");
+						item.setUrl("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" + urlTicket);
+						WxMpXmlOutNewsMessage m = WxMpXmlOutMessage.NEWS().fromUser(inMessage.getToUserName())
+								.toUser(inMessage.getFromUserName()).addArticle(item).build();
+						response.getWriter().write(m.toXml());
+					}
+					
+
+					if (inMessage.getEventKey().equals("V1001_TODAY_SINGER")) {
+						WxMpXmlMessage.ScanCodeInfo codeInf = inMessage.getScanCodeInfo();
+						String lang = "zh_CN"; // 语言
+						WxMpUser user = wxMpService.userInfo(inMessage.getFromUserName(), lang);
+						System.out.println(" 用户信息 ：" + user.toString());
+					}
+					
+					if (inMessage.getEventKey().equals("rselfmenu_0_1")) {
+						WxMpXmlMessage.ScanCodeInfo codeInf = inMessage.getScanCodeInfo();
+						System.out.println("扫码类型:" + codeInf.getScanType() + " 扫码结果: " + codeInf.getScanResult());
+						String lang = "zh_CN"; // 语言
+						WxMpUser user = wxMpService.userInfo(inMessage.getFromUserName(), lang);
+						System.out.println("rselfmenu_0_1  用户信息 ：" + user.toString());
+						queryOneBean.clear();
+						queryOneBean.executeQuery("SELECT * FROM    t_test_wx where URLSTR ='"+ codeInf.getScanResult()+"' ");
+						response.getWriter().write(WxMpXmlOutMessage.TEXT()
+								  .content(user.getNickname()+"累计积分1分")
+								  .fromUser(inMessage.getToUserName())
+								  .toUser(queryOneBean.getValue("USERID"))
+								  .build().toXml());
+					}
+					if (inMessage.getEvent().equals("SCAN")) {
+						String ticketStr=inMessage.getTicket();
+						queryOneBean.clear();
+						queryOneBean.executeQuery("SELECT * FROM    t_test_wx where TICKETSTR ='"+inMessage.getTicket()+"' ");
+						String lang = "zh_CN"; // 语言
+						WxMpUser user = wxMpService.userInfo(inMessage.getFromUserName(), lang);
+						System.out.println(" 用户信息 ：" + user.toString());
+						
+						
+						if(!queryOneBean.getValue("USERID").equals("")){
+						response.getWriter().write(WxMpXmlOutMessage.TEXT()
+								  .content(user.getNickname()+"累计积分1分")
+								  .fromUser(inMessage.getToUserName())
+								  .toUser(queryOneBean.getValue("USERID"))
+								  .build().toXml());
+						}
+					}
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -200,12 +253,12 @@ public class WxMpServlet extends HttpServlet {
 		WxMenu menu = new WxMenu();
 		WxMenuButton button1 = new WxMenuButton();
 		button1.setType("click");
-		button1.setName("今日歌曲");
+		button1.setName("二维码");
 		button1.setKey("EWM");
 
 		WxMenuButton button2 = new WxMenuButton();
 		button2.setType("click");
-		button2.setName("歌手简介");
+		button2.setName("简介");
 		button2.setKey("V1001_TODAY_SINGER");
 
 		WxMenuButton button3 = new WxMenuButton();
@@ -215,29 +268,21 @@ public class WxMpServlet extends HttpServlet {
 		menu.getButtons().add(button2);
 		menu.getButtons().add(button3);
 
-		WxMenuButton button31 = new WxMenuButton();
-		button31.setType("view");
-		button31.setName("搜索");
-		button31.setUrl("http://www.soso.com/");
-
-		WxMenuButton button32 = new WxMenuButton();
-		button32.setType("view");
-		button32.setName("视频");
-		button32.setUrl("http://v.qq.com/");
-
-		WxMenuButton button33 = new WxMenuButton();
-		button33.setType("click");
-		button33.setName("赞一下我们");
-		button33.setKey("V1001_GOOD");
-
+		/*
+		 * WxMenuButton button31 = new WxMenuButton(); button31.setType("view"); button31.setName("搜索"); button31.setUrl("http://www.soso.com/");
+		 * 
+		 * WxMenuButton button32 = new WxMenuButton(); button32.setType("view"); button32.setName("视频"); button32.setUrl("http://v.qq.com/");
+		 * 
+		 * WxMenuButton button33 = new WxMenuButton(); button33.setType("click"); button33.setName("赞一下我们"); button33.setKey("V1001_GOOD");
+		 */
 		WxMenuButton button44 = new WxMenuButton();
 		button44.setType("scancode_push");
 		button44.setName("扫码推事件");
 		button44.setKey("rselfmenu_0_1");
 
-		button3.getSubButtons().add(button31);
-		button3.getSubButtons().add(button32);
-		button3.getSubButtons().add(button33);
+		/*
+		 * button3.getSubButtons().add(button31); button3.getSubButtons().add(button32); button3.getSubButtons().add(button33);
+		 */
 		button3.getSubButtons().add(button44);
 		// 创建菜单
 		try {
